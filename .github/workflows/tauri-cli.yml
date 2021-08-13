@@ -79,7 +79,11 @@ jobs:
         with:
           target: ${{ matrix.target }}
       - name: Build
-        run: cd tooling/cli.rs && cargo build --release --target ${{ matrix.target }}
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --target ${{ matrix.target }} --release --manifest-path tooling/cli.rs/Cargo.toml
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
