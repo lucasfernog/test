@@ -41,18 +41,17 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           target: ${{ matrix.platform.target }}
-      - run: cd ./tooling/cli.rs
       - name: Build
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.platform.target }} --release --verbose
+          args: --target ${{ matrix.platform.target }} --release --verbose --manifest-path tooling/cli.rs/Cargo.toml
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/${{ matrix.platform.target }}/release/cargo-tauri${{ matrix.platform.ext }}
+          file: ./tooling/cli.rs/target/${{ matrix.platform.target }}/release/cargo-tauri${{ matrix.platform.ext }}
           tag: tauri-cli-${{ github.event.inputs.version }}
           asset_name: ${{ format('tauri-cli-{0}{1}', matrix.platform.target, matrix.platform.ext ) }}
           release_name: Tauri CLI ${{ github.event.inputs.version }}
