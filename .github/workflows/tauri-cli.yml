@@ -12,63 +12,26 @@ env:
 
 jobs:
   build:
-    name: Publish and Publish Tauri CLI for ${{ matrix.os }} ${{ matrix.target }}
-    runs-on: ${{ matrix.os }}
+    name: Publish and Publish Tauri CLI for ${{ matrix.platform.os }} ${{ matrix.platform.target }}
+    runs-on: ${{ matrix.platform.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, windows-latest, macos-latest]
-        include:
+        platform:
           # Linux
-          - os: ubuntu-18.04
-            artifact_name: cargo-tauri
-            asset_ext: ''
-            target: aarch64-unknown-linux-gnu
-          - os: ubuntu-18.04
-            artifact_name: cargo-tauri
-            asset_ext: ''
-            target: aarch64-unknown-linux-musl
-          - os: ubuntu-18.04
-            artifact_name: cargo-tauri
-            asset_ext: ''
-            target: i686-unknown-linux-gnu
-          - os: ubuntu-18.04
-            artifact_name: cargo-tauri
-            asset_ext: ''
-            target: i686-unknown-linux-musl
-          - os: ubuntu-18.04
-            artifact_name: cargo-tauri
-            asset_ext: ''
-            target: x86_64-unknown-linux-gnu
-          - os: ubuntu-18.04
-            artifact_name: cargo-tauri
-            asset_ext: ''
-            target: x86_64-unknown-linux-musl
+          - { target: aarch64-unknown-linux-gnu, os: ubuntu-18.04, ext: '' }
+          - { target: aarch64-unknown-linux-musl, os: ubuntu-18.04, ext: '' }
+          - { target: i686-unknown-linux-gnu, os: ubuntu-18.04, ext: '' }
+          - { target: i686-unknown-linux-musl, os: ubuntu-18.04, ext: '' }
+          - { target: x86_64-unknown-linux-gnu, os: ubuntu-18.04, ext: '' }
+          - { target: x86_64-unknown-linux-musl, os: ubuntu-18.04, ext: '' }
           # Windows
-          - os: windows-latest
-            artifact_name: cargo-tauri.exe
-            asset_ext: .exe
-            target: i686-pc-windows-gnu
-          - os: windows-latest
-            artifact_name: cargo-tauri.exe
-            asset_ext: .exe
-            target: 686-pc-windows-msvc
-          - os: windows-latest
-            artifact_name: cargo-tauri.exe
-            asset_ext: .exe
-            target: x86_64-pc-windows-gnu
-          - os: windows-latest
-            artifact_name: cargo-tauri.exe
-            asset_ext: .exe
-            target: x86_64-pc-windows-msvc
-          # MacOS
-          - os: macos-latest
-            artifact_name: cargo-tauri
-            asset_ext: ''
-            target: aarch64-apple-darwin
-          - os: macos-latest
-            artifact_name: cargo-tauri
-            asset_ext: ''
-            target: x86_64-apple-darwin
+          - { target: i686-pc-windows-gnu, os: windows-latest, ext: '.exe' }
+          - { target: i686-pc-windows-msvc, os: windows-latest, ext: '.exe' }
+          - { target: x86_64-pc-windows-gnu, os: windows-latest, ext: '.exe' }
+          - { target: x86_64-pc-windows-msvc, os: windows-latest, ext: '.exe' }
+          # macOS
+          - { target: x86_64-unknown-linux-musl, os: ubuntu-18.04, ext: '' }
+          - { target: aarch64-apple-darwin, os: ubuntu-18.04, ext: '' }
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -77,18 +40,18 @@ jobs:
       - name: install stable
         uses: actions-rs/toolchain@v1
         with:
-          target: ${{ matrix.target }}
+          target: ${{ matrix.platform.target }}
       - name: Build
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.target }} --release --manifest-path tooling/cli.rs/Cargo.toml
+          args: --target ${{ matrix.platform.target }} --release --manifest-path tooling/cli.rs/Cargo.toml
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./tooling/cli.rs/target/release/${{ matrix.artifact_name }}
+          file: ./tooling/cli.rs/target/${{ matrix.platform.target }}/release/cargo-tauri${{ matrix.platform.ext }}
           tag: tauri-cli-${{ github.event.inputs.version }}
-          asset_name: ${{ format('tauri-cli-{0}{1}', matrix.target, matrix.asset_ext ) }} ${{ matrix.asset_name }}{{ matrix.asset_ext }}
+          asset_name: ${{ format('tauri-cli-{0}{1}', matrix.platform.target, matrix.platform.ext ) }}
           release_name: Tauri CLI ${{ github.event.inputs.version }}
