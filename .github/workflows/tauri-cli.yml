@@ -48,7 +48,7 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.platform.target }} --release --manifest-path tooling/cli.rs/Cargo.toml
+          args: --target ${{ matrix.platform.target }} --release --verbose --manifest-path tooling/cli.rs/Cargo.toml
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
