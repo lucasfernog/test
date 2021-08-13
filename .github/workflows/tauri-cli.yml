@@ -31,7 +31,7 @@ jobs:
           - { target: x86_64-pc-windows-gnu, os: windows-latest, ext: '.exe' }
           - { target: x86_64-pc-windows-msvc, os: windows-latest, ext: '.exe' }
           # macOS
-          - { target: x86_64-unknown-linux-musl, os: ubuntu-18.04, ext: '' }
+          - { target: x86_64-apple-darwin, os: macos-latest, ext: '' }
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
