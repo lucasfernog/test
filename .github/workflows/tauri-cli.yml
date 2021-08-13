@@ -41,6 +41,8 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           target: ${{ matrix.platform.target }}
+          override: true
+          default: true
       - name: Build
         uses: actions-rs/cargo@v1
         with:
@@ -51,7 +53,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./tooling/cli.rs/target/${{ matrix.platform.target }}/release/cargo-tauri${{ matrix.platform.ext }}
+          file: ./tooling/cli.rs/target/release/cargo-tauri${{ matrix.platform.ext }}
           tag: tauri-cli-${{ github.event.inputs.version }}
           asset_name: ${{ format('tauri-cli-{0}{1}', matrix.platform.target, matrix.platform.ext ) }}
           release_name: Tauri CLI ${{ github.event.inputs.version }}
